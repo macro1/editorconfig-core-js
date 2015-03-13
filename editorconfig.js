@@ -82,6 +82,10 @@ function parseFromFiles(filepath, files, options) {
     return configs.reverse();
   }).reduce(function (matches, file) {
     var pathPrefix = path.dirname(file.name);
+    if (path.sep === '\\') {
+      pathPrefix = pathPrefix.replace(/\\/g, '/');
+      filepath = filepath.replace(/\\/g, '/');
+    }
     file.contents.forEach(function (section) {
       var glob = section[0], options = section[1];
       if (!glob) return;
@@ -89,7 +93,7 @@ function parseFromFiles(filepath, files, options) {
         case -1: glob = "**/" + glob; break;
         case  0: glob = glob.substring(1); break;
       }
-      var fullGlob = path.join(pathPrefix, glob);
+      var fullGlob = pathPrefix + '/' + glob;
       if (!fnmatch(filepath, fullGlob)) return;
       for (var key in options) {
         var value = options[key];
